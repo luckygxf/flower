@@ -29,7 +29,7 @@ public class Flower {
 		String community = args[1]; // SNMP协议使用的团体名
 		String ip = args[2]; // 网关路由器的IP地址
 		int port = Integer.parseInt(args[3]); // SNMP协议使用的端口
-		Long interval = args.length == 4 ? Long.valueOf(args[4]) : null; // 流量监测的时间间隔
+		Long interval = args.length == 5 ? Long.valueOf(args[4]) : null; // 流量监测的时间间隔
 		
 		// 准备监视
 		LanFlowMon lfm = new LanFlowMon(community, ip, port, interval);
