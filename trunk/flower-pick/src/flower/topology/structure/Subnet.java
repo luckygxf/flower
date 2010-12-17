@@ -17,8 +17,8 @@ public class Subnet {
     public Subnet(){
         this.subNetAddress=null;
         this.subNetMask=null;
-        //this.activeIP=null;
     }
+    
     public Subnet(String subNetAddress, String subNetMask){
         this.subNetAddress=subNetAddress;
         this.subNetMask=subNetMask;
@@ -42,6 +42,7 @@ public class Subnet {
     public void addActiveIp(String ip){
         this.activeIP.add(ip);
     }
+    
     /**
      * @return the subNetAddress
      */

@@ -40,8 +40,8 @@ public class SNMPUtil {
 	private static int port = 161;
     private static String community = "public";
     private static int version = SnmpConstants.version2c;
-	private static int maxRowPerPDU = 20;
-	private static int timeout = 1000;
+	private static int maxRowPerPDU = 100;
+	private static long timeout = 5000;
     
     public static CommunityTarget udpTarget(String source, int port, String community, int version) {
         try {
@@ -339,5 +339,13 @@ public class SNMPUtil {
 
 	public static void setVersion(int version) {
 		SNMPUtil.version = version;
+	}
+
+	public static long getTimeout() {
+		return timeout;
+	}
+
+	public static void setTimeout(long timeout) {
+		SNMPUtil.timeout = timeout;
 	}    	
 }

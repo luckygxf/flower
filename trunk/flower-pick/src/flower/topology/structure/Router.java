@@ -82,9 +82,11 @@ public class Router extends Device {
     
     public void assignLink() {
     	for (Link link : linkMap.values()) {
-    		Integer ifIndex = link.getSrcIfIndex(); 
-    		if (ifIndex != null) {
-    			Interface inf = interfaceMap.get(ifIndex);
+    		Integer srcIfIndex = link.getSrcIfIndex();
+    		Integer dstIfIndex = link.getDstIfIndex();
+    		Integer dstRouter = link.getDstRouterID();
+    		if (srcIfIndex != null && dstIfIndex != null && dstRouter != null) {
+    			Interface inf = interfaceMap.get(srcIfIndex);
     			if (inf != null) {
     				inf.setLink(link);
     				inf.setConType(1);
@@ -112,7 +114,7 @@ public class Router extends Device {
     
     public void assignIP2SubNet(int index, String ipAddr) {
         Interface inf = interfaceMap.get(index);
-    	if (inf.getSubnet() != null) {
+    	if (inf != null && inf.getSubnet() != null) {
     		Subnet cws = inf.getSubnet(); 
     		if (cws.isValidate(ipAddr)) {
     			cws.addActiveIp(ipAddr);

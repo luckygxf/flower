@@ -57,7 +57,10 @@ public class TopDiscover {
                         String netMask = ri.getNetMask();
                         if (!netMask.equals("255.255.255.255") && !ri.getDestination().equals("0.0.0.0")) {//全1表示一个地址，其他表示子网。
                             Subnet subnet = new Subnet(ri.getDestination(), netMask);//子网连接有接口标志，
-                            if (inf != null) inf.setSubnet(subnet);
+                            if (inf != null) {
+                            	inf.setSubnet(subnet);
+                            	inf.setConType(0);
+                            }
                         }
                     } // case 3 结束
                     break;

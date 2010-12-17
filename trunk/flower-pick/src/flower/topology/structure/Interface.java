@@ -18,7 +18,7 @@ public class Interface {
     private Subnet subnet = null; 		// 接口上的子网
     private Link link = null; 			// 接口上的链路（连接其它路由器）
     
-    private int conType = 0;			// 接口上的连接类型：0代表内部主机或子网，1代表内部路由间链路，2代表边界路由链路
+    private int conType = -1;			// 接口上的连接类型：-1代表直连主机（无IP），0代表子网，1代表内部路由间链路，2代表边界路由链路
     
 	public Interface(int index, int type, String descr, long speed, String physAddress) {
         this.index = index;
