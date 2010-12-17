@@ -118,7 +118,7 @@ public class SNMPUtil {
 			List<TableEvent> list = tableUtils.getTable(target, columns, null, null);
 			for (TableEvent ev : list) {
 				VariableBinding[] vbs = ev.getColumns();
-				try {
+				if (ev.getStatus() != -1) {
 					int index = vbs[0].getVariable().toInt();
 					int type = vbs[1].getVariable().toInt();
 					String descr = vbs[2].getVariable().toString();
@@ -127,8 +127,8 @@ public class SNMPUtil {
 					Interface inf = new Interface(
 							index, type, descr, speed, physAddress);                    
 	                infMap.put(index, inf);
-				} catch (NullPointerException e) {
-					continue;
+				} else {
+					System.out.println("WARNING: SNMP failed!");
 				}
 			}
 			snmp.close();
@@ -165,11 +165,13 @@ public class SNMPUtil {
 			List<TableEvent> list = tableUtils.getTable(target, columns, null, null);
 			for(TableEvent ev : list) {
 				VariableBinding[] vbs = ev.getColumns();
-				if (vbs != null) {
+				if (ev.getStatus() != -1) {
 					String addr = vbs[0].getVariable().toString();
 	                int ifIndex = vbs[1].getVariable().toInt();
 	                String netMask = vbs[2].getVariable().toString();
 	                ipList.add(new Object[]{addr, ifIndex, netMask});
+				} else {
+					System.out.println("WARNING: SNMP failed!");
 				}
             }
             snmp.close();
@@ -209,7 +211,7 @@ public class SNMPUtil {
 			List<TableEvent> list = tableUtils.getTable(target, columns, null, null);
 			for(TableEvent ev : list) {
 				VariableBinding[] vbs = ev.getColumns();
-				if (vbs != null) {
+				if (ev.getStatus() != -1) {
 					String dest = vbs[0].getVariable().toString();
 	                int ifIndex = vbs[1].getVariable().toInt();
 	                String nextHop = vbs[2].getVariable().toString();
@@ -217,6 +219,8 @@ public class SNMPUtil {
 	                String mask = vbs[4].getVariable().toString();
 	                RouteItem ri = new RouteItem(dest, ifIndex, nextHop, type, mask);
 	                routeList.add(ri);
+				} else {
+					System.out.println("WARNING: SNMP failed!");
 				}
             }
             snmp.close();
@@ -254,11 +258,13 @@ public class SNMPUtil {
 			List<TableEvent> list = tableUtils.getTable(target, columns, null, null);
 			for(TableEvent ev : list) {
 				VariableBinding[] vbs = ev.getColumns();
-				if (vbs != null) {
+				if (ev.getStatus() != -1) {
 					int ifIndex = vbs[0].getVariable().toInt();
 					String netAddress = vbs[1].getVariable().toString();
 					IPToMacItem ipm = new IPToMacItem(ifIndex, netAddress);
 					ipmList.add(ipm);
+				} else {
+					System.out.println("WARNING: SNMP failed!");
 				}
             }
             snmp.close();
@@ -297,17 +303,23 @@ public class SNMPUtil {
 			List<TableEvent> list = tableUtils.getTable(target, columns, null, null);
 			for (TableEvent ev : list) {
 				VariableBinding[] vbs = ev.getColumns();
-				try {
+				if (ev.getStatus() != -1) {
 					if (vbs[0].getVariable().toInt() == 1) { // 仅保存状态为up的接口数据
 						Object[] flow = new Object[9];
 						flow[0] = vbs[1].getVariable().toInt();
+						boolean nullFlag = false;
 						for (int i = 1; i < 9; i++) {
+							if (vbs[i+1] == null) {
+								nullFlag = true;
+								break;
+							}
 							flow[i] = vbs[i+1].getVariable().toLong();
 						}
+						if (nullFlag) continue;
 						ifFlowList.add(flow);
 					}
-				} catch (NullPointerException e) { // 其中一项出现异常，跳过
-					continue;
+				} else {
+					System.out.println("WARNING: SNMP failed!");
 				}
 			}
 			snmp.close();
