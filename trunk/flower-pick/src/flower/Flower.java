@@ -1,10 +1,12 @@
 package flower;
 
 import java.util.List;
+import java.util.Timer;
 
 import flower.flow.LanFlowMon;
 import flower.topology.TopDiscover;
 import flower.topology.structure.Router;
+import flower.util.DatabaseWorker;
 import flower.util.SNMPUtil;
 
 /**
@@ -50,6 +52,8 @@ public class Flower {
 		LanFlowMon lfm = new LanFlowMon(interval);
 		
 		// 准备监视
+		SNMPUtil.snmpListen();
+		DatabaseWorker.connect();
 		if ("i".equals(mode)) { // 判断运行模式
 			// 拓扑发现
 			List<Router> routerList = TopDiscover.DiscoveryRouters(ip);
@@ -64,7 +68,12 @@ public class Flower {
 		}
 		// 开始监视
 		System.out.println("Flow Monitoring Started!");
-		lfm.run();
+		Timer timer = new Timer();
+		timer.schedule(lfm, 0, interval);
+		//lfm.run();
+		// 结束
+		//SNMPUtil.snmpClose();
+		//DatabaseWorker.release();
 	}
 
 }

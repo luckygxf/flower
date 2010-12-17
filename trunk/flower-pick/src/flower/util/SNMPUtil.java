@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,7 @@ public class SNMPUtil {
     private static int version = SnmpConstants.version2c;
 	private static int maxRowPerPDU = 100;
 	private static long timeout = 5000;
+	private static Snmp snmp;
     
     public static CommunityTarget udpTarget(String source, int port, String community, int version) {
         try {
@@ -76,13 +78,10 @@ public class SNMPUtil {
     	PDU pdu = new PDU();
         pdu.add(new VariableBinding(oid_sysObjectID));
         try {
-        	Snmp snmp = new Snmp(new DefaultUdpTransportMapping());
-        	snmp.listen();
 			pdu = snmp.send(pdu, target).getResponse();
 			if (pdu == null) return null;
 			@SuppressWarnings("unchecked")
 			Vector<VariableBinding> vbs = pdu.getVariableBindings();
-			snmp.close();
 			return vbs.get(0).getVariable().toString();
 		} catch (IOException ex) {
 			Logger.getLogger(SNMPUtil.class.getName()).log(Level.SEVERE, null, ex);
@@ -101,8 +100,6 @@ public class SNMPUtil {
 		CommunityTarget target = udpTarget(adminIP, port, community, version);
 		Map<Integer, Interface> infMap = new HashMap<Integer, Interface>();
 		try {
-			Snmp snmp = new Snmp(new DefaultUdpTransportMapping());
-			snmp.listen();
 			PDUFactory pF = new DefaultPDUFactory(PDU.GETBULK);
 			TableUtils tableUtils = new TableUtils(snmp, pF);
 			tableUtils.setMaxNumRowsPerPDU(maxRowPerPDU);
@@ -128,12 +125,11 @@ public class SNMPUtil {
 							index, type, descr, speed, physAddress);                    
 	                infMap.put(index, inf);
 				} else {
-					System.out.println("WARNING: SNMP failed!");
+					System.out.println("[" + new Date() + "]WARNING: SNMP failed at the " + adminIP + "!");
 				}
 			}
-			snmp.close();
 			return infMap;
-		} catch (IOException ex) {
+		} catch (Exception ex) {
 			return null;
 		}
 	}
@@ -150,8 +146,6 @@ public class SNMPUtil {
 		Vector<Object[]> ipList = new Vector<Object[]>();
         
 		try {
-			Snmp snmp = new Snmp(new DefaultUdpTransportMapping());
-			snmp.listen();
 			PDUFactory pF = new DefaultPDUFactory(PDU.GETBULK);
 			TableUtils tableUtils = new TableUtils(snmp, pF);
 			tableUtils.setMaxNumRowsPerPDU(maxRowPerPDU);
@@ -171,12 +165,11 @@ public class SNMPUtil {
 	                String netMask = vbs[2].getVariable().toString();
 	                ipList.add(new Object[]{addr, ifIndex, netMask});
 				} else {
-					System.out.println("WARNING: SNMP failed!");
+					System.out.println("[" + new Date() + "]WARNING: SNMP failed at the " + adminIP + "!");
 				}
             }
-            snmp.close();
             return ipList;
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(SNMPUtil.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
@@ -194,8 +187,6 @@ public class SNMPUtil {
         List<RouteItem> routeList = new ArrayList<RouteItem>();
         
 		try {
-			Snmp snmp = new Snmp(new DefaultUdpTransportMapping());
-			snmp.listen();
 			PDUFactory pF = new DefaultPDUFactory(PDU.GETBULK);
 			TableUtils tableUtils = new TableUtils(snmp, pF);
 			tableUtils.setMaxNumRowsPerPDU(maxRowPerPDU);
@@ -220,12 +211,11 @@ public class SNMPUtil {
 	                RouteItem ri = new RouteItem(dest, ifIndex, nextHop, type, mask);
 	                routeList.add(ri);
 				} else {
-					System.out.println("WARNING: SNMP failed!");
+					System.out.println("[" + new Date() + "]WARNING: SNMP failed at the " + adminIP + "!");
 				}
             }
-            snmp.close();
             return routeList;
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(SNMPUtil.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
@@ -244,8 +234,6 @@ public class SNMPUtil {
 		List<IPToMacItem> ipmList = new ArrayList<IPToMacItem>();
         
 		try {
-			Snmp snmp = new Snmp(new DefaultUdpTransportMapping());
-			snmp.listen();
 			PDUFactory pF = new DefaultPDUFactory(PDU.GETBULK);
 			TableUtils tableUtils = new TableUtils(snmp, pF);
 			tableUtils.setMaxNumRowsPerPDU(maxRowPerPDU);
@@ -264,12 +252,11 @@ public class SNMPUtil {
 					IPToMacItem ipm = new IPToMacItem(ifIndex, netAddress);
 					ipmList.add(ipm);
 				} else {
-					System.out.println("WARNING: SNMP failed!");
+					System.out.println("[" + new Date() + "]WARNING: SNMP failed at the " + adminIP + "!");
 				}
             }
-            snmp.close();
             return ipmList;
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(SNMPUtil.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
@@ -281,8 +268,6 @@ public class SNMPUtil {
 		CommunityTarget target = udpTarget(adminIP, port, community, version);
 		Vector<Object[]> ifFlowList = new Vector<Object[]>();
 		try {
-			Snmp snmp = new Snmp(new DefaultUdpTransportMapping());
-			snmp.listen();
 			PDUFactory pF = new DefaultPDUFactory(PDU.GETBULK);
 			TableUtils tableUtils = new TableUtils(snmp, pF);
 			tableUtils.setMaxNumRowsPerPDU(maxRowPerPDU);
@@ -319,13 +304,33 @@ public class SNMPUtil {
 						ifFlowList.add(flow);
 					}
 				} else {
-					System.out.println("WARNING: SNMP failed!");
+					System.out.println("[" + new Date() + "]WARNING: SNMP failed at the " + adminIP + "!");
 				}
 			}
-			snmp.close();
 			return ifFlowList;
-		} catch (IOException ex) {
+		} catch (Exception ex) {
 			return null;
+		}
+	}
+	
+	public static boolean snmpListen() {
+		try {
+			snmp = new Snmp(new DefaultUdpTransportMapping());
+			snmp.listen();
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public static boolean snmpClose() {
+		try {
+			snmp.close();
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
 		}
 	}
 	

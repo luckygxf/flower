@@ -19,7 +19,6 @@ public class DataManagement {
 	}
 	
 	public boolean creatFileWriter(String fileName) {
-
 		try {
 			FileWriter fw =  new FileWriter(fileName, true); 
 			fileWriterMap.put(fileName,fw);

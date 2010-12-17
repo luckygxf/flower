@@ -59,7 +59,7 @@ public class TopDiscover {
                             Subnet subnet = new Subnet(ri.getDestination(), netMask);//子网连接有接口标志，
                             if (inf != null) {
                             	inf.setSubnet(subnet);
-                            	inf.setConType(0);
+                            	if (inf.getConType() == -1) inf.setConType(0);
                             }
                         }
                     } // case 3 结束
@@ -126,7 +126,9 @@ public class TopDiscover {
 		                            	adjCrMap.get(curRouterID).setDstIfIndex(inf.getIndex());
 		                            }
                         		} else { // 无响应，看作边界路由接口
-                        			if (inf != null) inf.setConType(2);
+                        			if (inf != null) {
+                        				inf.setConType(2);
+                        			}
                         		}
                             }
                         }                     

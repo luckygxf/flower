@@ -2,8 +2,8 @@ package flower.flow;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-
 import java.util.List;
+import java.util.TimerTask;
 
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.Snmp;
@@ -20,7 +20,7 @@ import flower.util.SNMPUtil;
  * @author 易建龙
  * @author 郑旭东
  */
-public class LanFlowMon implements Runnable {
+public class LanFlowMon extends TimerTask {
 	
 	Snmp snmp;
 	CommunityTarget comTarget; 
@@ -32,21 +32,21 @@ public class LanFlowMon implements Runnable {
 		if (interval != null) this.interval = interval;
 	}	
 	
-	@Override
+	//@Override
 	public void run() {
 		
-		while(true) {
+//		while(true) {
 			Timestamp time = new Timestamp(System.currentTimeMillis());
 			for (int i = 0; i < routerIPs.size(); i++) {
 				String ip = routerIPs.get(i);
 				List<Object[]> flowList = SNMPUtil.getIfFlow(ip);				
 				storeFlow(i, flowList, time);
 			}
-			try {
-				Thread.sleep(interval);
-			}catch (Exception e) { 
-			}
-		}
+//			try {
+//				Thread.sleep(interval);
+//			}catch (Exception e) { 
+//			}
+//		}
 	}
 	
 	private void storeFlow(int routerID, List<Object[]> flowList, Timestamp time) {
@@ -73,7 +73,6 @@ public class LanFlowMon implements Runnable {
 	}
 	
 	public void init(List<Router> routerList) {
-		DatabaseWorker.connect();
 		// 创建路由器IP列表
 		routerIPs = new ArrayList<String>();
 		// TODO 判断表是否存在	
@@ -123,7 +122,6 @@ public class LanFlowMon implements Runnable {
 	}
 	
 	public void init() {
-		DatabaseWorker.connect();
 		// 创建路由器IP列表
 		routerIPs = new ArrayList<String>();
 		// 从数据库中查得路由器IP并添加到列表中

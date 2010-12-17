@@ -47,7 +47,6 @@ public class DatabaseWorker {
 
 	public static List<Object[]> select(String sql) {
 		try {
-			connect();
 			rs = stmt.executeQuery(sql);
 			ResultSetMetaData meta_data = rs.getMetaData();// 列名
 			int columnNum = meta_data.getColumnCount();
@@ -61,7 +60,6 @@ public class DatabaseWorker {
 				rsList.add(item);
 			}
 			rs.close();
-			release();
 			return rsList;
 		} catch (Exception e) {
 			if(DEBUG)System.out.println("Query failed!");
@@ -71,11 +69,9 @@ public class DatabaseWorker {
 
 	public static void insert(String sql) {
 		try {
-			connect();
 			stmt.clearBatch();
 			stmt.addBatch(sql);
 			stmt.executeBatch();
-			release();
 			if(DEBUG)System.out.println("Insert Successful!");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -86,9 +82,7 @@ public class DatabaseWorker {
 
 	public static void execute(String sql) {
 		try {
-			connect();
 			stmt.execute(sql);
-			release();
 			if(DEBUG)System.out.println("Execute Successful!");
 		} catch (Exception e) {
 			if(DEBUG)System.out.println("Execute failed!");
@@ -97,9 +91,7 @@ public class DatabaseWorker {
 	
 	public static void update(String sql) {
 		try {
-			connect();
 			stmt.executeUpdate(sql);
-			release();
 			if(DEBUG)System.out.println("Update Successful!");
 		} catch (Exception e) {
 			if(DEBUG)System.out.println("Update failed!");
