@@ -1,21 +1,15 @@
 package flower.flow;
 
-import java.io.IOException;
-import java.net.InetAddress;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import java.util.List;
 
 import org.snmp4j.CommunityTarget;
-
 import org.snmp4j.Snmp;
-import org.snmp4j.mp.SnmpConstants;
-import org.snmp4j.smi.OctetString;
-import org.snmp4j.smi.UdpAddress;
 
 import flower.topology.structure.Interface;
+import flower.topology.structure.Link;
 import flower.topology.structure.Router;
 import flower.util.DatabaseWorker;
 import flower.util.OIDUtil;
@@ -32,40 +26,20 @@ public class LanFlowMon implements Runnable {
 	CommunityTarget comTarget; 
 	long interval = 30000;
 	OIDUtil oidUtil = new OIDUtil();
-	SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
 	List<String> routerIPs;
 
-	public LanFlowMon(String community, String address, Integer port, Long interval) {
-		try {
-			comTarget = new CommunityTarget();
-			comTarget.setCommunity(new OctetString(community));
-			comTarget.setAddress(new UdpAddress(InetAddress.getByName(address), port));
-	
-			comTarget.setVersion(SnmpConstants.version2c);
-			comTarget.setRetries(3);
-			comTarget.setTimeout(5000);
-			
-			if (interval != null) this.interval = interval;
-		
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		DatabaseWorker.connect();
+	public LanFlowMon(Long interval) {
+		if (interval != null) this.interval = interval;
 	}	
 	
 	@Override
 	public void run() {
 		
-//		PDU request = new PDU();
-//		ArrayList<String> indexs = getIndexes(oidUtil.getOIDNumStr("ifOperStatus"),"1");
-//		ArrayList<String> pOIDs = oidUtil.getInterfaceFlowOIDs();
-
-		
 		while(true) {
+			Timestamp time = new Timestamp(System.currentTimeMillis());
 			for (int i = 0; i < routerIPs.size(); i++) {
 				String ip = routerIPs.get(i);
-				List<Object[]> flowList = SNMPUtil.getIfFlow(ip);
-				Timestamp time = new Timestamp(System.currentTimeMillis());
+				List<Object[]> flowList = SNMPUtil.getIfFlow(ip);				
 				storeFlow(i, flowList, time);
 			}
 			try {
@@ -99,13 +73,14 @@ public class LanFlowMon implements Runnable {
 	}
 	
 	public void init(List<Router> routerList) {
+		DatabaseWorker.connect();
 		// 创建路由器IP列表
 		routerIPs = new ArrayList<String>();
 		// TODO 判断表是否存在	
 		// 清除原有表项
 		DatabaseWorker.execute("DELETE FROM Routers");
 		DatabaseWorker.execute("DELETE FROM Interfaces");
-		DatabaseWorker.execute("DELETE FROM Subnets");
+		DatabaseWorker.execute("DELETE FROM IPs");
 		DatabaseWorker.execute("DELETE FROM Flows");
 		// 将路由器、接口、子网信息写入数据库，并保存一份路由器IP列表在内存中
 		for (Router router : routerList) {
@@ -113,6 +88,7 @@ public class LanFlowMon implements Runnable {
 			String rIP = router.getAdminIP();
 			String rDescr = router.getDescription();
 			routerIPs.add(rIP); // 将IP地址插入列表
+			// 向数据库写入路由器信息
 			DatabaseWorker.insert("INSERT INTO Routers VALUES(" + 
 					rID + ",\"" + rIP + "\",\"" + rDescr +"\")");			
 			for (Interface inf : router.getInterfaceMap().values()) {
@@ -124,17 +100,30 @@ public class LanFlowMon implements Runnable {
 				String ifMask = inf.getNetMask();
 				int ifType = inf.getType();
 				int ifConType = inf.getConType();
+				String ifLink = null;
+				Link link = inf.getLink();
+				if (link != null) ifLink = link.getDstRouterID() + "." + link.getDstIfIndex();
 				String infID = rID + "." + ifIndex;
+				// 向数据库写入接口信息
 				DatabaseWorker.insert("INSERT INTO Interfaces VALUES(\"" + 
 						infID + "\"," + ifIndex + "," + rID + ",\"" +
 						ifDescr + "\"," + ifSpeed + ",\"" + ifMAC + "\",\"" + 
-						ifIP + "\",\"" + ifMask + "\"," + ifType + "," + ifConType + ")");
+						ifIP + "\",\"" + ifMask + "\"," + ifType + "," + 
+						ifConType + ",\"" + ifLink + "\")");
+				if (inf.getSubnet() != null) {
+					for (String ip : inf.getSubnet().getActiveIP()) {
+						// 向数据库写入子网IP关联
+						DatabaseWorker.insert("INSERT INTO IPs VALUES(\"" + 
+								ip + "\"," + infID + ")");
+					}
+				}
 			}
-			// TODO 插入Subnets表			
+					
 		}
 	}
 	
 	public void init() {
+		DatabaseWorker.connect();
 		// 创建路由器IP列表
 		routerIPs = new ArrayList<String>();
 		// 从数据库中查得路由器IP并添加到列表中
