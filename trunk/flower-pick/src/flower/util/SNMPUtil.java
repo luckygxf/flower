@@ -125,13 +125,14 @@ public class SNMPUtil {
 							index, type, descr, speed, physAddress);                    
 	                infMap.put(index, inf);
 				} else {
-					System.out.println("[" + new Date() + "]WARNING: SNMP failed at the " + adminIP + "!");
+					System.out.println("[" + new Date() + "]WARNING: SNMP get some ipTable item failed at the " + adminIP + "!");
 				}
 			}
-			return infMap;
-		} catch (Exception ex) {
-			return null;
+		} catch (Exception e) {
+        	System.out.println("[" + new Date() + "]WARNING: SNMP get all ipTable item failed at the " + adminIP + "!");
+			e.printStackTrace();
 		}
+		return infMap;
 	}
 	
 	/**
@@ -165,14 +166,14 @@ public class SNMPUtil {
 	                String netMask = vbs[2].getVariable().toString();
 	                ipList.add(new Object[]{addr, ifIndex, netMask});
 				} else {
-					System.out.println("[" + new Date() + "]WARNING: SNMP failed at the " + adminIP + "!");
+					System.out.println("[" + new Date() + "]WARNING: SNMP get some ipAddrTable item failed at the " + adminIP + "!");
 				}
             }
-            return ipList;
-        } catch (Exception ex) {
-            Logger.getLogger(SNMPUtil.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
+        } catch (Exception e) {
+        	System.out.println("[" + new Date() + "]WARNING: SNMP get all ipAddrTable item failed at the " + adminIP + "!");
+			e.printStackTrace();
         }
+        return ipList;
 	}
 	
 	/**
@@ -211,14 +212,14 @@ public class SNMPUtil {
 	                RouteItem ri = new RouteItem(dest, ifIndex, nextHop, type, mask);
 	                routeList.add(ri);
 				} else {
-					System.out.println("[" + new Date() + "]WARNING: SNMP failed at the " + adminIP + "!");
+					System.out.println("[" + new Date() + "]WARNING: SNMP get some ipRouteTable item failed at the " + adminIP + "!");
 				}
             }
-            return routeList;
-        } catch (Exception ex) {
-            Logger.getLogger(SNMPUtil.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
+        } catch (Exception e) {
+        	System.out.println("[" + new Date() + "]WARNING: SNMP get all ipRouteTable item failed at the " + adminIP + "!");
+			e.printStackTrace();
         }
+        return routeList;
 	}
 	
 	/**
@@ -252,14 +253,14 @@ public class SNMPUtil {
 					IPToMacItem ipm = new IPToMacItem(ifIndex, netAddress);
 					ipmList.add(ipm);
 				} else {
-					System.out.println("[" + new Date() + "]WARNING: SNMP failed at the " + adminIP + "!");
+					System.out.println("[" + new Date() + "]WARNING: SNMP get some ipNetToMediaTable item failed at the " + adminIP + "!");
 				}
             }
-            return ipmList;
-        } catch (Exception ex) {
-            Logger.getLogger(SNMPUtil.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
+        } catch (Exception e) {
+			System.out.println("[" + new Date() + "]WARNING: SNMP all ipNetToMediaTable item failed at the " + adminIP + "!");
+			e.printStackTrace();
         }
+        return ipmList;
 	}
 	
 	public static List<Object[]> getIfFlow(String adminIP) {
@@ -289,7 +290,7 @@ public class SNMPUtil {
 			for (TableEvent ev : list) {
 				VariableBinding[] vbs = ev.getColumns();
 				if (ev.getStatus() != -1) {
-					if (vbs[0].getVariable().toInt() == 1) { // 仅保存状态为up的接口数据
+					if (vbs[0] != null && vbs[0].getVariable().toInt() == 1) { // 仅保存状态为up的接口数据
 						Object[] flow = new Object[9];
 						flow[0] = vbs[1].getVariable().toInt();
 						boolean nullFlag = false;
@@ -304,13 +305,14 @@ public class SNMPUtil {
 						ifFlowList.add(flow);
 					}
 				} else {
-					System.out.println("[" + new Date() + "]WARNING: SNMP failed at the " + adminIP + "!");
+					System.out.println("[" + new Date() + "]WARNING: SNMP get some interfaces flow failed at the " + adminIP + "!");
 				}
 			}
-			return ifFlowList;
-		} catch (Exception ex) {
-			return null;
+		} catch (Exception e) {
+			System.out.println("[" + new Date() + "]WARNING: SNMP get all interfaces flow failed at the " + adminIP + "!");
+			e.printStackTrace();
 		}
+		return ifFlowList;
 	}
 	
 	public static boolean snmpListen() {
