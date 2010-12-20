@@ -10,7 +10,7 @@ import flower.util.DatabaseWorker;
 import flower.util.SNMPUtil;
 
 /**
- * 主程序
+ * 流量采集程序的主类
  * @author 郑旭东
  * @author 易建龙
  */
@@ -24,7 +24,8 @@ public class Flower {
 	private static long timeout; // 流量监测的时间间隔
 	
 	/**
-	 * @param args
+	 * 主程序
+	 * @param args 运行参数
 	 */
 	public static void main(String[] args) {
 		try {
@@ -66,14 +67,10 @@ public class Flower {
 		} else {
 			lfm.init();
 		}
-		// 开始监视
+		// 定时监视
 		System.out.println("Flow Monitoring Started!");
 		Timer timer = new Timer();
 		timer.schedule(lfm, 0, interval);
-		//lfm.run();
-		// 结束
-		//SNMPUtil.snmpClose();
-		//DatabaseWorker.release();
 	}
 
 }

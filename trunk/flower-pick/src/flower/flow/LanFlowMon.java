@@ -16,7 +16,7 @@ import flower.util.OIDUtil;
 import flower.util.SNMPUtil;
 
 /**
- * 表示流量监视器的类
+ * 表示流量监测器的类
  * @author 易建龙
  * @author 郑旭东
  */
@@ -28,27 +28,33 @@ public class LanFlowMon extends TimerTask {
 	OIDUtil oidUtil = new OIDUtil();
 	List<String> routerIPs;
 
+	/**
+	 * 构造一个流量监测器
+	 * @param interval 采样时间时隔
+	 */
 	public LanFlowMon(Long interval) {
 		if (interval != null) this.interval = interval;
 	}	
 	
-	//@Override
+	/**
+	 * 进行一次流量采集的方法，将定时被调用
+	 */
+	@Override
 	public void run() {
-		
-//		while(true) {
-			Timestamp time = new Timestamp(System.currentTimeMillis());
-			for (int i = 0; i < routerIPs.size(); i++) {
-				String ip = routerIPs.get(i);
-				List<Object[]> flowList = SNMPUtil.getIfFlow(ip);				
-				storeFlow(i, flowList, time);
-			}
-//			try {
-//				Thread.sleep(interval);
-//			}catch (Exception e) { 
-//			}
-//		}
+		Timestamp time = new Timestamp(System.currentTimeMillis());
+		for (int i = 0; i < routerIPs.size(); i++) {
+			String ip = routerIPs.get(i);
+			List<Object[]> flowList = SNMPUtil.getIfFlow(ip);				
+			storeFlow(i, flowList, time);
+		}
 	}
 	
+	/**
+	 * 将采集到的数据，存储到数据库中
+	 * @param routerID 路由器ID
+	 * @param flowList 流量数据
+	 * @param time 采集时间
+	 */
 	private void storeFlow(int routerID, List<Object[]> flowList, Timestamp time) {
 		for (Object[] item : flowList) {
 			int index = (Integer) item[0];
@@ -68,10 +74,10 @@ public class LanFlowMon extends TimerTask {
 		}
 	}
 
-	public void setInterval(long newVal){
-		this.interval = newVal;
-	}
-	
+	/**
+	 * i（初始）模式运行的初始化，清空数据库，将路由器和接口信息写入数据库
+	 * @param routerList 路由器信息列表
+	 */
 	public void init(List<Router> routerList) {
 		// 创建路由器IP列表
 		routerIPs = new ArrayList<String>();
@@ -121,14 +127,24 @@ public class LanFlowMon extends TimerTask {
 		}
 	}
 	
+	/**
+	 * c（继续）模式运行的初始化，从数据库读入路由器和接口信息
+	 */
 	public void init() {
 		// 创建路由器IP列表
 		routerIPs = new ArrayList<String>();
 		// 从数据库中查得路由器IP并添加到列表中
-		List<Object[]> ipList = DatabaseWorker.select("SELECT Router_IP FROM Routers");
+		List<Object[]> ipList = DatabaseWorker.query("SELECT Router_IP FROM Routers");
 		for (Object[] item : ipList) {
 			routerIPs.add((String)item[0]);
 		}		
 	}
 	
+	/**
+	 * 设置采样间隔时间
+	 * @param newVal 间隔时间
+	 */
+	public void setInterval(long newVal){
+		this.interval = newVal;
+	}
 }

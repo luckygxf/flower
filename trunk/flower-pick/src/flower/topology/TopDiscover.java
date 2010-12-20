@@ -14,7 +14,11 @@ import flower.util.SNMPUtil;
  */
 public class TopDiscover {
 
-	//基本上要用到的信息经过几个发现后，都存在ROUTES里面
+	/**
+	 * 进行拓扑发现的方法
+	 * @param source 网关地址
+	 * @return 路由器信息列表
+	 */
     public static List<Router> DiscoveryRouters(String source) {
         
     	int count = 0;
@@ -28,7 +32,7 @@ public class TopDiscover {
     	Router curRouter = new Router(count++, source, descr);
         routerList.add(curRouter);
 
-        /***************************下面是遍历路由器表，对每个路由器取路由表，获得相邻路由器信息，附加到路由器表尾部*****************/
+        // 下面是遍历路由器表，对每个路由器取路由表，获得相邻路由器信息，附加到路由器表尾部
         while (i < routerList.size()) {
             /******************************找相邻那个啥路由器的***************************************/
             /**有两种方式：

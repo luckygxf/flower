@@ -2,6 +2,7 @@ package flower.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.snmp4j.smi.OID;
 
@@ -48,8 +49,11 @@ public class OIDUtil {
 		}
 	}
 	
-	//得到与端口有关的OID列表
-	public static ArrayList<String> getInterfaceFlowOIDs() {
+	/**
+	 * 得到与端口有关的OID列表
+	 * @return 与端口有关的OID列表
+	 */
+	public static List<String> getInterfaceFlowOIDs() {
 		ArrayList<String> al = new ArrayList<String>();
 		
 		for(String desc : OIDMap.keySet()) {
@@ -60,6 +64,11 @@ public class OIDUtil {
 		return al;
 	}
 	
+	/**
+	 * 通过OID字符串获取一个OID的描述
+	 * @param num OID字符串，例如1.3.6.1.2.1.1.1.0
+	 * @return OID的描述，例如sysDescr
+	 */
 	public static String getOIDDesc(String num) {
 		return ROIDMap.get(num);
 	}
