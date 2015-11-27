@@ -17,8 +17,7 @@ import flower.util.SNMPUtil;
 
 /**
  * 表示流量监测器的类
- * @author 易建龙
- * @author 郑旭东
+ * @author 官祥飞
  */
 public class LanFlowMon extends TimerTask {
 	

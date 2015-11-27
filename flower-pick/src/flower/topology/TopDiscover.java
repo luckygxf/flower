@@ -9,8 +9,7 @@ import flower.util.SNMPUtil;
 
 /**
  * 进行拓扑发现的类
- * @author 徐海航
- * @author 郑旭东
+ * @author 官祥飞
  */
 public class TopDiscover {
 
@@ -54,7 +53,7 @@ public class TopDiscover {
                 int ifIndex = ri.getIfIndex();
                 if (ifIndex <= 0 && curRouter.getOtherIpToIfMap().containsKey(nextHop)) 
                 	ifIndex = curRouter.getOtherIpToIfMap().get(nextHop);
-                Interface inf = curRouter.getInterfaceMap().get(ifIndex);
+                Interface inf = curRouter.getInterfaceMap().get(ifIndex);							//add by gxf 路由表项接口信息
                 switch (ri.getRouteType()) {
                     case 3: { // direct表示这里的目的地址是直连的子网或者主机地址
                         //将目的网段存为子网，然后将地址转换表的中涉及到的Ip分配到网段中
@@ -65,6 +64,9 @@ public class TopDiscover {
                             	inf.setSubnet(subnet);
                             	if (inf.getConType() == -1) inf.setConType(0);
                             }
+                            //add by gxf
+                            curRouter.getSubNetList().add(subnet);
+                            //---end add
                         }
                     } // case 3 结束
                     break;
@@ -73,7 +75,7 @@ public class TopDiscover {
                     	if (nextHop.equals("0.0.0.0")) {
                             break;
                         }
-                        int index = curRouter.rankAtIfIndex(nextHop);
+                        int index = curRouter.rankAtIfIndex(nextHop);			//add by gxf index是ip对应的接口
                         if (index == -1) {//非回环路由，排除本机地址
                         	// 路由器判重
                             int k = 0;
@@ -83,7 +85,7 @@ public class TopDiscover {
                                     break;
                                 }
                                 k++;
-                            }
+                            }//while
                             
                             int curRouterID = curRouter.getRouterID();
                             if (index > 0) { // 属于某个已探测到的路由器
@@ -141,11 +143,11 @@ public class TopDiscover {
 
                     default:
                         break;
-                }
+                }//switch
 
-            }
+            }//for
             i++;
-        }
+        }//while
         
         for (Router router : routerList) {
             router.assignLink();

@@ -8,8 +8,7 @@ import org.snmp4j.smi.OID;
 
 /**
  * OID名字信息的类
- * @author 易建龙
- * @author 郑旭东
+ * @author 官祥飞
  */
 public class OIDUtil {
 

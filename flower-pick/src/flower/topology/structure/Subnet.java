@@ -6,7 +6,7 @@ import java.util.Vector;
 
 /**
  * 表示子网的类
- * @author 徐海航
+ * @author 官祥飞
  */
 public class Subnet {
 
@@ -24,6 +24,8 @@ public class Subnet {
         this.subNetMask=subNetMask;
     }
     
+    //验证IP是否属于子网
+    //ip与子网掩码位与操作，如果结果等于子网掩码，说明ip属于子网
     public boolean isValidate(String ip){
         
         String[] ss=ip.split("\\.");
@@ -85,6 +87,7 @@ public class Subnet {
         this.activeIP = activeIP;
     }
     
+    //输出子网地址，以及子网中活动的设备ip
     public void print() {
     	System.out.print(subNetAddress + " " + subNetMask);
     	for (String ip : activeIP) {

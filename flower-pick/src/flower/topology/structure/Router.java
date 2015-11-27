@@ -9,8 +9,7 @@ import flower.util.SNMPUtil;
 
 /**
  * 表示路由器的类
- * @author 徐海航
- * @author 郑旭东
+ * @author 官祥飞
  */
 public class Router extends Device {
 
@@ -18,7 +17,7 @@ public class Router extends Device {
     private String adminIP = null;	// 路由器IP
     private Map<Integer, Interface> interfaceMap; // 接口号映射到接口信息的Map
     private Map<String, Integer> ipToIndexMap; // 接口IP（本路由IP）到接口号的Map
-    private Map<String, Integer> otherIpToIfMap; // 接口上连接的IP（非本路由IP）到接口号的Map
+    private Map<String, Integer> otherIpToIfMap; // 接口上连接的IP（非本路由IP）到接口号的Map  从代码来看应该是通过ARP映射添加的其他机器的IP
 	private List<IPToMacItem> ipmList; // IP到MAC映射信息的列表
     private Map<Integer, Link> linkMap = new HashMap<Integer, Link>(); // 下一条路由标识到连接信息的Map
     private List<Subnet> subNetList = new ArrayList<Subnet>();	// 子网信息的列表
@@ -94,7 +93,7 @@ public class Router extends Device {
     		}
     	}
     }
-    
+    //获取主机ip对应接口号，如果ip不是主机ip，返回-1
     public int rankAtIfIndex(String ip) {
         if (ipToIndexMap != null) {
             Integer flag = ipToIndexMap.get(ip);
@@ -103,6 +102,7 @@ public class Router extends Device {
         return -1;
     }
     
+    //通过arp表获取子网内活动的ip主机
     public void assignDevices() {
         int i = 0;
         int s = this.ipmList.size();

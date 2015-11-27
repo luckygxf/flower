@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
 import org.snmp4j.Snmp;
+import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
@@ -33,8 +34,7 @@ import flower.topology.structure.RouteItem;
 
 /**
  * 专门用于SNMP获取MIB信息的工具类
- * @author 徐海航
- * @author 郑旭东
+ * @author 官祥飞
  */
 public class SNMPUtil {
 
@@ -76,9 +76,13 @@ public class SNMPUtil {
 		CommunityTarget target = udpTarget(adminIP, port, community, version);
         OID oid_sysObjectID = new OID(".1.3.6.1.2.1.1.1.0");	// sysDescr;
     	PDU pdu = new PDU();
+    	//add by gxf
+    	pdu.setType(PDU.GET);
         pdu.add(new VariableBinding(oid_sysObjectID));
         try {
-			pdu = snmp.send(pdu, target).getResponse();
+        	//add by gxf
+        	ResponseEvent re = snmp.send(pdu, target);
+			pdu = re.getResponse();
 			if (pdu == null) return null;
 			@SuppressWarnings("unchecked")
 			Vector<VariableBinding> vbs = pdu.getVariableBindings();

@@ -11,14 +11,13 @@ import java.util.List;
 
 /**
  * 进行数据库操作的类
- * @author 易建龙
- * @author 郑旭东
+ * @author 官祥飞
  */
 public class DatabaseWorker {
 	
 	private static String url = "jdbc:mysql://localhost:3306/flower"; 
-	private static String username = "flower";
-	private static String password = "computernetworks";
+	private static String username = "root";
+	private static String password = "";
 	private static Connection con;
 	private static Statement stmt;
 

@@ -2,8 +2,7 @@ package flower.topology.structure;
 
 /**
  * 表示接口的类
- * @author 徐海航
- * @author 郑旭东
+ * @author 官祥飞
  */
 public class Interface {
 

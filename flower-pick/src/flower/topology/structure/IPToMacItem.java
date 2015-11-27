@@ -2,7 +2,7 @@ package flower.topology.structure;
 
 /**
  * 表示IP-MAC表项的类
- * @author 徐海航
+ * @author 官祥飞
  */
 public class IPToMacItem {
     private int ifindex;

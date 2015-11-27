@@ -13,7 +13,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/snmp4j-1.11.1.jar">
+	<classpathentry exported="true" kind="lib" path="lib/snmp4j-1.11.1.jar" sourcepath="D:/Java Document/snmp4j-2.3.4/src">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/"/>
 		</attributes>
